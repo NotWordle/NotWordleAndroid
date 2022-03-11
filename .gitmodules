@@ -1,0 +1,3 @@
+[submodule "app/src/main/cpp/NotWordle"]
+	path = app/src/main/cpp/NotWordle
+	url = git@github.com:NotWordle/NotWordle.git

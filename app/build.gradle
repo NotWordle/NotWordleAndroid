@@ -16,6 +16,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
+                arguments '-DANDROID_TOOLCHAIN=g++'
                 cppFlags '-std=c++11'
             }
         }

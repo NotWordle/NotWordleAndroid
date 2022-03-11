@@ -9,11 +9,13 @@ cmake_minimum_required(VERSION 3.18.1)
 
 project("notwordleapp")
 
+set(BUILD_WITH_ANDROID True)
+
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
 # Gradle automatically packages shared libraries with your APK.
-add_subdirectory(model)
+add_subdirectory(NotWordle)
 
 add_library( # Sets the name of the library.
         notwordle
@@ -26,8 +28,8 @@ add_library( # Sets the name of the library.
         jni/grid-jni.cpp
         )
 
-message("android inc dir: ${CMAKE_CURRENT_SOURCE_DIR}/model/inc/game")
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/model/inc)
+message("android inc dir: ${CMAKE_CURRENT_SOURCE_DIR}/NotWordle/inc/game")
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/NotWordle/inc)
 target_include_directories(notwordle PUBLIC "${PROJECT_BINARY_DIR}")
 
 # Searches for a specified prebuilt library and stores the path as a
