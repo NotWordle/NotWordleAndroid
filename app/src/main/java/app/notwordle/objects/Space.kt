@@ -1,23 +1,21 @@
 package app.notwordle.objects
 
-import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Paint.ANTI_ALIAS_FLAG
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.OvalShape
-import android.util.AttributeSet
-import android.view.View
+enum class Validity(v: Int) {
+    EMPTY(0),
+    INVALID(1),
+    CLOSE(2),
+    CORRECT(3)
+}
 
-class Space(addr: Long) {
-    private var nativePtr: Long = addr
-
-    class Space() {
-    }
+class Space() {
+    private var nativePtr: Long
 
     init {
         nativePtr = createNativeSpace()
+    }
+
+    constructor(addr: Long) : this() {
+        nativePtr = addr
     }
 
     fun getLetter() : Char {
@@ -28,9 +26,13 @@ class Space(addr: Long) {
         setNativeLetter(nativePtr, letter)
     }
 
+    fun getValidity() : Validity {
+       return Validity.values()[getNativeValidity(nativePtr)]
+    }
 
     private external fun createNativeSpace() : Long
     private external fun destroyNativeInstance(p_native_ptr : Long)
     private external fun getNativeLetter(p_native_ptr: Long) : Char
     private external fun setNativeLetter(p_native_ptr: Long, letter: Char)
+    private external fun getNativeValidity(p_native_ptr: Long) : Int
 }

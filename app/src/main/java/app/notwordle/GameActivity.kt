@@ -8,8 +8,7 @@ import android.widget.TextView
 import app.notwordle.objects.Grid
 import android.widget.GridLayout.LayoutParams
 import android.widget.LinearLayout
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.widget.doOnTextChanged
+import app.notwordle.objects.Validity
 
 class GameActivity : AppCompatActivity() {
     lateinit var grid: Grid
@@ -22,17 +21,35 @@ class GameActivity : AppCompatActivity() {
         val wordSize = intent.getIntExtra("WordSize", 0)
         grid = Grid()
         grid.initializeGrid(wordSize)
-        println("GRID: \n ${grid.toString()}")
         createGrid(grid)
 
+        val input_layout = findViewById<LinearLayout>(R.id.input_layout)
+        input_layout.removeAllViews()
+        val testBtn = Button(this)
+        testBtn.setText("TRUNK")
+        testBtn.setOnClickListener {
+            grid.updateLine("TRUNK")
+            println("trying to update line")
+            createGrid(grid)
+        }
+        input_layout.addView(testBtn)
 
-
+        val nextBtn = Button(this)
+        nextBtn.setText("NEXT")
+        nextBtn.setOnClickListener {
+            grid.incrementGuess();
+            println("incremented guess")
+            createGrid(grid)
+        }
+        input_layout.addView(nextBtn)
     }
 
     private fun createGrid(grid: Grid) {
         val dimensions : Pair<Int, Int> = grid.getGridDimensions()
 
-        val vertLayout = findViewById<LinearLayout>(R.id.game_layout)
+        println("GRID: \n $grid")
+
+        val vertLayout = findViewById<LinearLayout>(R.id.game_grid)
         vertLayout.removeAllViews()
         vertLayout.layoutParams.height = LayoutParams.MATCH_PARENT
         vertLayout.layoutParams.width = LayoutParams.MATCH_PARENT
@@ -50,26 +67,19 @@ class GameActivity : AppCompatActivity() {
                 txtView = TextView(this)
                 txtView.id = col
 
-                val space = grid.getSpace(row, col);
+                val space = grid.getSpace(row, col)
                 val l : Char = space.getLetter();
+                val v : Validity = space.getValidity()
 
-                txtView.text = "[ $l ]"
+                txtView.text = "[ $l : $v ]"
                 txtView.setTextColor(Color.GREEN)
                 val params2 = LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT)
                 txtView.layoutParams = params2
                 rowLayout.addView(txtView, col)
             }
             vertLayout.addView(rowLayout, row)
+        }
 
-        }
-        val btn = Button(this)
-        btn.setText("TRUNK")
-        btn.setOnClickListener {
-            grid.updateLine("TRUNK")
-            println("trying to update line");
-            createGrid(grid)
-        }
-        vertLayout.addView(btn)
     }
 }
 

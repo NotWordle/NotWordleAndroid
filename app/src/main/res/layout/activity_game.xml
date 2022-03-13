@@ -8,11 +8,21 @@
     tools:context=".GameActivity">
 
     <LinearLayout
-        android:id="@+id/game_layout"
-        android:layout_width="410dp"
+        android:id="@+id/game_grid"
+        android:layout_width="match_parent"
         android:layout_height="462dp"
         android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="268dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"></LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

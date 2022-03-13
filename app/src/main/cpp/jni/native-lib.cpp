@@ -35,6 +35,11 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_app_notwordle_objects_Space_setNativeLetter(JNIEnv *env, jobject thiz, jlong p_native_ptr,
                                          jchar letter) {
-    // TODO: implement setNativeLetter()
     ((Space*)p_native_ptr)->Letter(static_cast<char>(letter));
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_app_notwordle_objects_Space_getNativeValidity(JNIEnv *env, jobject thiz, jlong p_native_ptr) {
+    return static_cast<jint>(((Space*)p_native_ptr)->GetValidity());
 }
