@@ -1,9 +1,14 @@
 package app.notwordle.objects
 
-class Grid {
+import android.content.Context
+import android.view.View
+
+class Grid() {
     private var nativePtr: Long = 0
 
-    class Grid() {}
+    constructor(addr: Long) : this() {
+        nativePtr = addr
+    }
 
     fun initializeGrid(word_size: Int) {
         nativePtr = createNativeGrid(word_size)
@@ -42,4 +47,9 @@ class Grid {
     private external fun nativeGetGridDimensions(p_native_ptr: Long) : Pair<Int, Int>
     private external fun nativeGetSpace(p_native_ptr: Long, row: Int, col: Int) : Long
     //private external fun nativeMarkLettersUsed(p_native_ptr: Long,) TODO: Validity. Do I even need this tho
+}
+
+// TODO: transfer Grid creation/update to this class
+class GridView(context: Context) : View(context) {
+
 }

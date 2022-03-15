@@ -24,8 +24,10 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
-        jni/native-lib.cpp
+        jni/space-jni.cpp
         jni/grid-jni.cpp
+        jni/game-jni.cpp
+        jni/dictionary-jni.cpp
         )
 
 message("android inc dir: ${CMAKE_CURRENT_SOURCE_DIR}/NotWordle/inc/game")
