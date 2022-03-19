@@ -2,8 +2,13 @@ package app.notwordle.objects
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.util.TypedValue
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.widget.TextViewCompat
+import app.notwordle.R
 
 enum class Validity(v: Int) {
     EMPTY(0),
@@ -45,10 +50,14 @@ class Space() {
 @SuppressLint("AppCompatCustomView")
 class SpaceView(context: Context) : TextView(context) {
     init {
-        setBackgroundColor(Color.GRAY)
+        // get GradientDrawable from Resources and make any changes to it before saving it to background
+        val gradDraw = ResourcesCompat.getDrawable(resources, R.drawable.space_shape, null) as GradientDrawable?
+        gradDraw!!.cornerRadius = 20f
+        background = gradDraw
+        TextViewCompat.setAutoSizeTextTypeWithDefaults(this, AUTO_SIZE_TEXT_TYPE_UNIFORM)
     }
 
-    fun updateBackground(color_code : Int) {
-        setBackgroundColor(color_code)
+    fun updateBackgroundColor(color_val : Int) {
+        (background as GradientDrawable).setColor(color_val)
     }
 }

@@ -10,8 +10,13 @@
     <LinearLayout
         android:id="@+id/game_grid"
         android:layout_width="match_parent"
-        android:layout_height="462dp"
+        android:layout_height="418dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
         android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/input_layout"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -21,8 +26,14 @@
         android:id="@+id/input_layout"
         android:layout_width="match_parent"
         android:layout_height="268dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"></LinearLayout>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/game_grid"></LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

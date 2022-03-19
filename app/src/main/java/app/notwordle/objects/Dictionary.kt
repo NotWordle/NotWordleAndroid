@@ -11,5 +11,10 @@ class Dictionary(addr: Long) {
         nativeSetDictionaryFile(nativePtr, abs_path)
     }
 
+    fun selectRandomWord(word_size: Int) : String {
+        return nativeSelectRandomWord(nativePtr, word_size)
+    }
+
     private external fun nativeSetDictionaryFile(p_native_ptr : Long, abs_path: String)
+    private external fun nativeSelectRandomWord(p_native_ptr: Long, word_size: Int) : String
 }

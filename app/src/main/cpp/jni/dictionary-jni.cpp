@@ -24,3 +24,12 @@ Java_app_notwordle_objects_Dictionary_nativeSetDictionaryFile(JNIEnv *env, jobje
     bool valid = f.good();
     __android_log_write(ANDROID_LOG_DEBUG, "DICT", ("dict file from frontend: " + abs_path_str + " -- was valid? " + std::to_string(valid)).c_str());
 }
+
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_app_notwordle_objects_Dictionary_nativeSelectRandomWord(JNIEnv *env, jobject thiz,
+                                                             jlong p_native_ptr, jint word_size) {
+    auto cpp_word = ((Dictionary*)p_native_ptr)->SelectRandomWord((int) word_size);
+    jstring j_word = env->NewStringUTF(cpp_word.c_str());
+    return j_word;
+}

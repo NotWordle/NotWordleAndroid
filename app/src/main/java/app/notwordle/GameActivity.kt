@@ -2,16 +2,23 @@ package app.notwordle
 
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
+import android.content.res.ColorStateList
 import android.graphics.*
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.ShapeDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.view.Gravity
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import app.notwordle.objects.Grid
 import android.widget.GridLayout.LayoutParams
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.updateMargins
 import app.notwordle.objects.Game
 import app.notwordle.objects.SpaceView
@@ -44,6 +51,10 @@ class GameActivity : AppCompatActivity() {
         dict.setDictionaryFile(out.absolutePath)
         game.LoadDictionary(wordSize)
 
+        // TODO: this should be done within the CPP element only
+        val game_word = dict.selectRandomWord(wordSize);
+        println("game word: $game_word");
+
         // draw grid
         val grid = game.GetGrid()
         createGrid(grid)
@@ -64,10 +75,24 @@ class GameActivity : AppCompatActivity() {
 
             if(game.IsValidWord(word)) {
                 grid.updateLine(input.text.toString())
+                val res = game.checkGuess(game_word)
+                println("was that word correct? $res")
+
                 input.text.clear()
 
-                grid.incrementGuess();
+                if(!grid.incrementGuess()) {
+                    Toast.makeText(this, "Word was: $game_word, nice try!", Toast.LENGTH_LONG).show()
+                    input.isEnabled = false
+                    nextBtn.isEnabled = false
+                }
                 createGrid(grid)
+
+                if(res){
+                    Toast.makeText(this, "You got it!", Toast.LENGTH_LONG).show()
+                    input.isEnabled = false
+                    nextBtn.isEnabled = false
+                }
+
             } else {
                 Toast.makeText(this, "Invalid Word!", Toast.LENGTH_SHORT).show()
             }
@@ -81,8 +106,6 @@ class GameActivity : AppCompatActivity() {
 
         val gameLayout = findViewById<LinearLayout>(R.id.game_grid)
         gameLayout.removeAllViews()
-        gameLayout.layoutParams.height = LayoutParams.MATCH_PARENT
-        gameLayout.layoutParams.width = LayoutParams.MATCH_PARENT
 
         var rowLayout : LinearLayout?
         for(row in 0 until dimensions.first) {
@@ -91,34 +114,40 @@ class GameActivity : AppCompatActivity() {
 
             rowLayout.orientation = LinearLayout.HORIZONTAL;
             val params = LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+            params.weight = 1f
             rowLayout.layoutParams = params
 
             for(col in 0 until dimensions.second) {
                 val spaceView = SpaceView(this)
+                spaceView.gravity = Gravity.CENTER
                 rowLayout.addView(spaceView, col)
 
                 // default get width from parent instead of display
-                val metrics = DisplayMetrics()
-                this.windowManager.defaultDisplay.getMetrics(metrics)
-                val maxWidth = metrics.widthPixels
-                val maxHeight = metrics.heightPixels
-                val unitWidth = maxWidth / dimensions.second // space between Spaces
+//                val metrics = DisplayMetrics()
+//                this.windowManager.defaultDisplay.getMetrics(metrics)
+//                val maxWidth = metrics.widthPixels
+//                val maxHeight = metrics.heightPixels
+//                val unitWidth = maxWidth / dimensions.second // space between Spaces
 
                 val space = grid.getSpace(row, col)
                 val l : Char = space.getLetter();
                 val v : Validity = space.getValidity()
 
-                spaceView.text = "[ $l ]"
+                spaceView.text = "$l"
+                spaceView.setTextColor(Color.WHITE)
+
                 val color = when (v) {
                     Validity.EMPTY -> Color.GRAY
-                    Validity.INVALID -> Color.RED
+                    Validity.INVALID -> Color.DKGRAY
                     Validity.CLOSE -> Color.BLUE
                     Validity.CORRECT -> Color.GREEN
                 }
-                spaceView.updateBackground(color)
-                val params2 = LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT)
-                params2.updateMargins(left = unitWidth / 2, top = 0, right = 0, bottom = 0)
-                spaceView.layoutParams = params2
+                spaceView.updateBackgroundColor(color)
+
+                spaceView.layoutParams = LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT).apply {
+                    weight = 1f
+                    updateMargins(left = 2, top = 2, right = 2, bottom = 2)
+                }
             }
         }
 

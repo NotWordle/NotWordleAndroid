@@ -57,3 +57,12 @@ Java_app_notwordle_objects_Game_nativeLoadDictionary(JNIEnv *env, jobject thiz, 
                                                      jint word_size) {
     ((Game*)p_native_ptr)->LoadDictionary((int)word_size);
 }
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_app_notwordle_objects_Game_nativeCheckGuess(JNIEnv *env, jobject thiz, jlong p_native_ptr,
+                                                 jstring game_word) {
+    // convert java string to c++ string
+    jboolean isCopy = false;
+    auto utf_str = env->GetStringUTFChars(game_word, &isCopy);
+    return ((Game*)p_native_ptr)->CheckGuess(std::string(utf_str));}
