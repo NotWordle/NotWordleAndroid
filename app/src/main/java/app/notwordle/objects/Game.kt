@@ -7,36 +7,51 @@ class Game() {
         nativePtr = createNativeInstance()
     }
 
-    fun GetGrid() : Grid {
+    fun wordSize(size: Int) {
+        nativeWordSize(nativePtr, size)
+    }
+
+    fun randomizeSelectedWord() {
+        nativeRandomizeSelectedWord(nativePtr)
+    }
+
+    fun selectedWord() : String {
+        return nativeSelectedWord(nativePtr)
+    }
+
+    fun getGrid() : Grid {
         return Grid(nativeGetGrid(nativePtr))
     }
 
-    fun GetDictionary() : Dictionary {
-        return Dictionary(nativeGetDictionary(nativePtr))
+    fun setDictionaryFile(abs_path : String) {
+        nativeSetDictionaryFile(nativePtr, abs_path)
     }
 
-    fun InitializeGrid(word_size : Int) {
-        nativeInitializeGrid(nativePtr, word_size)
+    fun initializeGrid() {
+        nativeInitializeGrid(nativePtr)
     }
 
-    fun IsValidWord(word: String) : Boolean {
+    fun isValidWord(word: String) : Boolean {
         return nativeIsValidWord(nativePtr, word)
     }
 
-    fun LoadDictionary(word_size: Int) {
-        nativeLoadDictionary(nativePtr, word_size)
+    fun loadDictionary() {
+        nativeLoadDictionary(nativePtr)
     }
 
-    fun checkGuess(game_word: String) : Boolean {
-        return nativeCheckGuess(nativePtr, game_word)
+    fun checkGuess() : Boolean {
+        return nativeCheckGuess(nativePtr)
     }
 
     private external fun createNativeInstance() : Long
     private external fun destroyNativeInstance(p_native_ptr : Long)
+    private external fun nativeWordSize(p_native_ptr: Long, word_size: Int)
+    private external fun nativeRandomizeSelectedWord(p_native_ptr: Long)
+    private external fun nativeSelectedWord(p_native_ptr: Long) : String
     private external fun nativeGetGrid(p_native_ptr: Long) : Long
-    private external fun nativeGetDictionary(p_native_ptr: Long) : Long
-    private external fun nativeInitializeGrid(p_native_ptr: Long, word_size: Int)
+    private external fun nativeSetDictionaryFile(p_native_ptr : Long, abs_path: String)
+    private external fun nativeInitializeGrid(p_native_ptr: Long)
     private external fun nativeIsValidWord(p_native_ptr: Long, word: String) : Boolean
-    private external fun nativeLoadDictionary(p_native_ptr: Long, word_size: Int)
-    private external fun nativeCheckGuess(p_native_ptr: Long, game_word: String) : Boolean
+    private external fun nativeLoadDictionary(p_native_ptr: Long)
+    private external fun nativeCheckGuess(p_native_ptr: Long) : Boolean
 }

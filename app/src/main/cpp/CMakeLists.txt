@@ -27,7 +27,6 @@ add_library( # Sets the name of the library.
         jni/space-jni.cpp
         jni/grid-jni.cpp
         jni/game-jni.cpp
-        jni/dictionary-jni.cpp
         )
 
 message("android inc dir: ${CMAKE_CURRENT_SOURCE_DIR}/NotWordle/inc/game")

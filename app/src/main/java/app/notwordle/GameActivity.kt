@@ -40,23 +40,25 @@ class GameActivity : AppCompatActivity() {
 
         // create Game with grid set to chosen word size
         game = Game()
-        game.InitializeGrid(wordSize)
+        game.wordSize(wordSize)
+        game.initializeGrid()
 
         // set up dictionary by loading dictionary asset into tmp cache file for C++ to access
         val out = File.createTempFile("dictionary", ".tmp", cacheDir)
         out.writeText(assets.open("words").bufferedReader().use {
             it.readText()
         })
-        val dict = game.GetDictionary()
-        dict.setDictionaryFile(out.absolutePath)
-        game.LoadDictionary(wordSize)
+        game.setDictionaryFile(out.absolutePath)
+        game.loadDictionary()
+        game.randomizeSelectedWord()
+
+        val game_word = game.selectedWord()
 
         // TODO: this should be done within the CPP element only
-        val game_word = dict.selectRandomWord(wordSize);
         println("game word: $game_word");
 
         // draw grid
-        val grid = game.GetGrid()
+        val grid = game.getGrid()
         createGrid(grid)
 
         // create input by allowing user to write in text and enter it
@@ -73,9 +75,9 @@ class GameActivity : AppCompatActivity() {
         nextBtn.setOnClickListener {
             val word = input.text.toString()
 
-            if(game.IsValidWord(word)) {
+            if(game.isValidWord(word)) {
                 grid.updateLine(input.text.toString())
-                val res = game.checkGuess(game_word)
+                val res = game.checkGuess()
                 println("was that word correct? $res")
 
                 input.text.clear()
@@ -121,13 +123,6 @@ class GameActivity : AppCompatActivity() {
                 val spaceView = SpaceView(this)
                 spaceView.gravity = Gravity.CENTER
                 rowLayout.addView(spaceView, col)
-
-                // default get width from parent instead of display
-//                val metrics = DisplayMetrics()
-//                this.windowManager.defaultDisplay.getMetrics(metrics)
-//                val maxWidth = metrics.widthPixels
-//                val maxHeight = metrics.heightPixels
-//                val unitWidth = maxWidth / dimensions.second // space between Spaces
 
                 val space = grid.getSpace(row, col)
                 val l : Char = space.getLetter();
