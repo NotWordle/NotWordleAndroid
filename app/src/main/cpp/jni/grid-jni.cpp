@@ -2,7 +2,6 @@
 // Created by scott on 3/6/22.
 //
 #include <jni.h>
-#include <iostream>
 
 #include "game/objects/Grid.h"
 
@@ -36,9 +35,6 @@ Java_app_notwordle_objects_Grid_nativeUpdateLine(JNIEnv *env, jobject thiz, jlon
     // convert java string to c++ string
     jboolean isCopy = false;
     auto utf_str = env->GetStringUTFChars(word, &isCopy);
-
-    std::cout << "got string for line: " << utf_str << "\n";
-
     ((Grid*)p_native_ptr)->UpdateLine(std::string(utf_str));
 }
 

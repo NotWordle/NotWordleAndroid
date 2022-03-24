@@ -1,75 +1,93 @@
 package app.notwordle
 
-import android.graphics.*
+import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
-import android.widget.TextView
-import app.notwordle.objects.Grid
-import android.widget.GridLayout.LayoutParams
+import android.widget.EditText
 import android.widget.LinearLayout
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.widget.doOnTextChanged
+import android.widget.Toast
+import app.notwordle.objects.*
+import java.io.File
 
 class GameActivity : AppCompatActivity() {
-    lateinit var grid: Grid
+    lateinit var game: Game
+    var curLetter: Int = 0
+    lateinit var gridView: GridView
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
-        // create Grid from WordSize given by StartGameActivity
+        // get WordSize given by StartGameActivity Intent
         val wordSize = intent.getIntExtra("WordSize", 0)
-        grid = Grid()
-        grid.initializeGrid(wordSize)
-        println("GRID: \n ${grid.toString()}")
-        createGrid(grid)
 
+        // create Game on cpp backend
+        game = Game()
+        game.wordSize(wordSize)
+        game.initializeGrid()
+        loadDictionary()
+        game.randomizeSelectedWord()
+        val game_word = game.selectedWord()
 
+        println("game word: $game_word");
 
+        // draw grid
+        val grid = game.getGrid()
+        val gameLayout = findViewById<LinearLayout>(R.id.game_grid)
+        gameLayout.removeAllViews()
+        gridView = GridView(this, gameLayout)
+        gridView.generateGrid(grid)
+
+        // create input by allowing user to write in text and enter it
+        // TODO: change this to write type user guess into Spaces
+        val inputLayout = findViewById<LinearLayout>(R.id.input_layout)
+        inputLayout.removeAllViews()
+
+        val input = EditText(this)
+        input.hint = "enter input..."
+        inputLayout.addView(input)
+
+        val nextBtn = Button(this)
+        inputLayout.addView(nextBtn)
+        nextBtn.setText("ENTER")
+        nextBtn.setOnClickListener {
+            val word = input.text.toString()
+            if(game.isValidWord(word)) {
+                input.text.clear()
+
+                // update backend Grid and GridView with user input
+                grid.updateLine(word)
+                val res = game.checkGuess()
+                gridView.updateGrid(grid)
+
+                // check if game should continue or not (correct guess or out of guesses)
+                if(res){
+                    Toast.makeText(this, "You got it!", Toast.LENGTH_LONG).show()
+                    input.isEnabled = false
+                    nextBtn.isEnabled = false
+                } else if(!grid.incrementGuess()) {
+                    Toast.makeText(this, "Word was: $game_word, nice try!", Toast.LENGTH_LONG).show()
+                    input.isEnabled = false
+                    nextBtn.isEnabled = false
+                }
+            } else {
+                Toast.makeText(this, "Invalid Word!", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
-    private fun createGrid(grid: Grid) {
-        val dimensions : Pair<Int, Int> = grid.getGridDimensions()
-
-        val vertLayout = findViewById<LinearLayout>(R.id.game_layout)
-        vertLayout.removeAllViews()
-        vertLayout.layoutParams.height = LayoutParams.MATCH_PARENT
-        vertLayout.layoutParams.width = LayoutParams.MATCH_PARENT
-
-        var rowLayout : LinearLayout?
-        for(row in 0 until dimensions.first) {
-            rowLayout = LinearLayout(this)
-            rowLayout.id = row
-            rowLayout.orientation = LinearLayout.HORIZONTAL;
-            val params = LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-            rowLayout.layoutParams = params
-
-            var txtView : TextView?
-            for(col in 0 until dimensions.second) {
-                txtView = TextView(this)
-                txtView.id = col
-
-                val space = grid.getSpace(row, col);
-                val l : Char = space.getLetter();
-
-                txtView.text = "[ $l ]"
-                txtView.setTextColor(Color.GREEN)
-                val params2 = LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT)
-                txtView.layoutParams = params2
-                rowLayout.addView(txtView, col)
-            }
-            vertLayout.addView(rowLayout, row)
-
-        }
-        val btn = Button(this)
-        btn.setText("TRUNK")
-        btn.setOnClickListener {
-            grid.updateLine("TRUNK")
-            println("trying to update line");
-            createGrid(grid)
-        }
-        vertLayout.addView(btn)
+    private fun loadDictionary() {
+        // set up dictionary by loading dictionary asset into tmp cache file for C++ to access
+        val out = File.createTempFile("dictionary", ".tmp", cacheDir)
+        out.writeText(assets.open("words").bufferedReader().use {
+            it.readText()
+        })
+        game.setDictionaryFile(out.absolutePath)
+        game.loadDictionary()
     }
 }
 

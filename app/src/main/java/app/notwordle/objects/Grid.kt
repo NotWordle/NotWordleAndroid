@@ -1,9 +1,18 @@
 package app.notwordle.objects
 
-class Grid {
+import android.content.Context
+import android.graphics.Color
+import android.view.Gravity
+import android.view.View
+import android.widget.GridLayout
+import android.widget.LinearLayout
+
+class Grid() {
     private var nativePtr: Long = 0
 
-    class Grid() {}
+    constructor(addr: Long) : this() {
+        nativePtr = addr
+    }
 
     fun initializeGrid(word_size: Int) {
         nativePtr = createNativeGrid(word_size)
@@ -41,5 +50,50 @@ class Grid {
     private external fun nativeIncrementGuess(p_native_ptr: Long) : Boolean
     private external fun nativeGetGridDimensions(p_native_ptr: Long) : Pair<Int, Int>
     private external fun nativeGetSpace(p_native_ptr: Long, row: Int, col: Int) : Long
-    //private external fun nativeMarkLettersUsed(p_native_ptr: Long,) TODO: Validity. Do I even need this tho
+}
+
+class GridView(context: Context, var parent: LinearLayout) : View(context) {
+    fun generateGrid(grid: Grid) {
+        val dimensions = grid.getGridDimensions()
+        for(row in 0 until dimensions.first) {
+            val rowLayout = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                layoutParams = LinearLayout.LayoutParams(GridLayout.LayoutParams.MATCH_PARENT, GridLayout.LayoutParams.WRAP_CONTENT).apply {
+                    weight = 1f
+                }
+            }
+            parent.addView(rowLayout, row)
+
+            for(col in 0 until dimensions.second) {
+                val spaceView = SpaceView(context).apply {
+                    gravity = Gravity.CENTER
+                    text = "${grid.getSpace(row, col).getLetter()}"
+                }
+                rowLayout.addView(spaceView, col)
+                spaceView.setTextColor(Color.WHITE)
+                spaceView.updateBackgroundColor(Color.GRAY)
+            }
+        }
+    }
+
+    fun updateGrid(grid: Grid) {
+        val dimensions = grid.getGridDimensions()
+        for(row in 0 until dimensions.first) {
+            val rowLayout = parent.getChildAt(row) as LinearLayout
+            for(col in 0 until dimensions.second) {
+                val spaceView = rowLayout.getChildAt(col) as SpaceView
+                val space = grid.getSpace(row, col)
+
+                spaceView.text = "${space.getLetter()}"
+                val color = when (space.getValidity()) {
+                    Validity.EMPTY -> Color.GRAY
+                    Validity.INVALID -> Color.DKGRAY
+                    Validity.CLOSE -> Color.BLUE
+                    Validity.CORRECT -> Color.GREEN
+                }
+                spaceView.updateBackgroundColor(color)
+            }
+        }
+
+    }
 }
