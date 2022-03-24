@@ -2,11 +2,11 @@ package app.notwordle.objects
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
-import android.util.TypedValue
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.updateMargins
 import androidx.core.widget.TextViewCompat
 import app.notwordle.R
 
@@ -55,6 +55,10 @@ class SpaceView(context: Context) : TextView(context) {
         gradDraw!!.cornerRadius = 20f
         background = gradDraw
         TextViewCompat.setAutoSizeTextTypeWithDefaults(this, AUTO_SIZE_TEXT_TYPE_UNIFORM)
+        layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT).apply {
+            weight = 1f
+            updateMargins(left = 2, top = 2, right = 2, bottom = 2)
+        }
     }
 
     fun updateBackgroundColor(color_val : Int) {
