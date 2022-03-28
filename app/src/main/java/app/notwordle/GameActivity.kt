@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.InputType
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -45,39 +47,46 @@ class GameActivity : AppCompatActivity() {
         // create input by allowing user to write in text and enter it
         // TODO: change this to write type user guess into Spaces
         val inputLayout = findViewById<LinearLayout>(R.id.input_layout)
-        inputLayout.removeAllViews()
-
+//        inputLayout.removeAllViews()
+//
         val input = EditText(this)
         input.hint = "enter input..."
         inputLayout.addView(input)
+        input.setRawInputType(InputType.TYPE_CLASS_TEXT)
+        input.setTextIsSelectable(true)
 
-        val nextBtn = Button(this)
-        inputLayout.addView(nextBtn)
-        nextBtn.setText("ENTER")
-        nextBtn.setOnClickListener {
-            val word = input.text.toString()
-            if(game.isValidWord(word)) {
-                input.text.clear()
+        val keyboard = findViewById<GameKeyboard>(R.id.keyboard)
+        val ic = input.onCreateInputConnection(EditorInfo())
+        keyboard.setInputConnection(ic)
 
-                // update backend Grid and GridView with user input
-                grid.updateLine(word)
-                val res = game.checkGuess()
-                gridView.updateGrid(grid)
-
-                // check if game should continue or not (correct guess or out of guesses)
-                if(res){
-                    Toast.makeText(this, "You got it!", Toast.LENGTH_LONG).show()
-                    input.isEnabled = false
-                    nextBtn.isEnabled = false
-                } else if(!grid.incrementGuess()) {
-                    Toast.makeText(this, "Word was: $game_word, nice try!", Toast.LENGTH_LONG).show()
-                    input.isEnabled = false
-                    nextBtn.isEnabled = false
-                }
-            } else {
-                Toast.makeText(this, "Invalid Word!", Toast.LENGTH_SHORT).show()
-            }
-        }
+//
+//        val nextBtn = Button(this)
+//        inputLayout.addView(nextBtn)
+//        nextBtn.setText("ENTER")
+//        nextBtn.setOnClickListener {
+//            val word = input.text.toString()
+//            if(game.isValidWord(word)) {
+//                input.text.clear()
+//
+//                // update backend Grid and GridView with user input
+//                grid.updateLine(word)
+//                val res = game.checkGuess()
+//                gridView.updateGrid(grid)
+//
+//                // check if game should continue or not (correct guess or out of guesses)
+//                if(res){
+//                    Toast.makeText(this, "You got it!", Toast.LENGTH_LONG).show()
+//                    input.isEnabled = false
+//                    nextBtn.isEnabled = false
+//                } else if(!grid.incrementGuess()) {
+//                    Toast.makeText(this, "Word was: $game_word, nice try!", Toast.LENGTH_LONG).show()
+//                    input.isEnabled = false
+//                    nextBtn.isEnabled = false
+//                }
+//            } else {
+//                Toast.makeText(this, "Invalid Word!", Toast.LENGTH_SHORT).show()
+//            }
+//        }
     }
 
     private fun loadDictionary() {
