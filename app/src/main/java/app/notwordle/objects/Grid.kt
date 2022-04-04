@@ -76,6 +76,22 @@ class GridView(context: Context, var parent: LinearLayout) : View(context) {
         }
     }
 
+    fun getSpaceColor(row: Int, col: Int) : Int {
+        val rowLayout = parent.getChildAt(row) as LinearLayout
+        val spaceView = rowLayout.getChildAt(col) as SpaceView
+        return spaceView.getBackgroundColor()
+    }
+
+    fun updateSpace(row: Int, col: Int, letter: String) {
+        val rowLayout = parent.getChildAt(row) as LinearLayout
+        val spaceView = rowLayout.getChildAt(col) as SpaceView
+        if(letter.isNotEmpty()) {
+            spaceView.text = letter
+        } else {
+            spaceView.text = "-"
+        }
+    }
+
     fun updateGrid(grid: Grid) {
         val dimensions = grid.getGridDimensions()
         for(row in 0 until dimensions.first) {

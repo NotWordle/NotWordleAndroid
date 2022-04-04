@@ -2,6 +2,7 @@ package app.notwordle
 
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
@@ -15,8 +16,10 @@ import java.io.File
 
 class GameActivity : AppCompatActivity() {
     lateinit var game: Game
-    var curLetter: Int = 0
+    var curRow: Int = 0
+    var curCol: Int = 0
     lateinit var gridView: GridView
+    lateinit var keyboard: GameKeyboard
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,46 +50,42 @@ class GameActivity : AppCompatActivity() {
         // create input by allowing user to write in text and enter it
         // TODO: change this to write type user guess into Spaces
         val inputLayout = findViewById<LinearLayout>(R.id.input_layout)
-//        inputLayout.removeAllViews()
-//
         val input = EditText(this)
         input.hint = "enter input..."
         inputLayout.addView(input)
         input.setRawInputType(InputType.TYPE_CLASS_TEXT)
         input.setTextIsSelectable(true)
-
-        val keyboard = findViewById<GameKeyboard>(R.id.keyboard)
         val ic = input.onCreateInputConnection(EditorInfo())
+
+        keyboard = findViewById(R.id.keyboard)
         keyboard.setInputConnection(ic)
 
-//
-//        val nextBtn = Button(this)
-//        inputLayout.addView(nextBtn)
-//        nextBtn.setText("ENTER")
-//        nextBtn.setOnClickListener {
-//            val word = input.text.toString()
-//            if(game.isValidWord(word)) {
-//                input.text.clear()
-//
-//                // update backend Grid and GridView with user input
-//                grid.updateLine(word)
-//                val res = game.checkGuess()
-//                gridView.updateGrid(grid)
-//
-//                // check if game should continue or not (correct guess or out of guesses)
-//                if(res){
-//                    Toast.makeText(this, "You got it!", Toast.LENGTH_LONG).show()
-//                    input.isEnabled = false
-//                    nextBtn.isEnabled = false
-//                } else if(!grid.incrementGuess()) {
-//                    Toast.makeText(this, "Word was: $game_word, nice try!", Toast.LENGTH_LONG).show()
-//                    input.isEnabled = false
-//                    nextBtn.isEnabled = false
-//                }
-//            } else {
-//                Toast.makeText(this, "Invalid Word!", Toast.LENGTH_SHORT).show()
-//            }
-//        }
+        val enterBtn = keyboard.keys[keyboard.getButtonIndex("ent")]
+        enterBtn!!.setOnClickListener {
+            val word = input.text.toString()
+            if(game.isValidWord(word)) {
+                input.text.clear()
+
+                // update backend Grid and GridView with user input
+                grid.updateLine(word)
+                val res = game.checkGuess()
+                gridView.updateGrid(grid)
+                updateKeyboard()
+
+                // check if game should continue or not (correct guess or out of guesses)
+                if(res){
+                    Toast.makeText(this, "You got it!", Toast.LENGTH_LONG).show()
+                    input.isEnabled = false
+                    enterBtn.isEnabled = false
+                } else if(!grid.incrementGuess()) {
+                    Toast.makeText(this, "Word was: $game_word, nice try!", Toast.LENGTH_LONG).show()
+                    input.isEnabled = false
+                    enterBtn.isEnabled = false
+                }
+            } else {
+                Toast.makeText(this, "Invalid Word!", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun loadDictionary() {
@@ -97,6 +96,25 @@ class GameActivity : AppCompatActivity() {
         })
         game.setDictionaryFile(out.absolutePath)
         game.loadDictionary()
+    }
+
+    private fun updateKeyboard() {
+        game.markAvailableLetters();
+
+        val valList = game.getAvailableLetters()
+
+        for((idx, v) in valList.withIndex()) {
+            val keyName : String = (idx.toChar() + 'A'.toInt()).toString()
+            val color = when (v) {
+                Validity.EMPTY -> Color.GRAY
+                Validity.INVALID -> Color.DKGRAY
+                Validity.CLOSE -> Color.BLUE
+                Validity.CORRECT -> Color.GREEN
+            }
+
+            keyboard.updateKeyBackground(keyName, color)
+
+        }
     }
 }
 
