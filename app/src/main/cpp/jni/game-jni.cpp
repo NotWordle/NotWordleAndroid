@@ -93,3 +93,27 @@ JNIEXPORT jboolean JNICALL
 Java_app_notwordle_objects_Game_nativeCheckGuess(JNIEnv *env, jobject thiz, jlong p_native_ptr) {
     return ((Game*)p_native_ptr)->CheckGuess();
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_app_notwordle_objects_Game_nativeMarkAvailableLetters(JNIEnv *env, jobject thiz,
+                                                           jlong p_native_ptr) {
+    ((Game*)p_native_ptr)->MarkLettersUsed();
+}
+
+extern "C"
+JNIEXPORT jintArray JNICALL
+Java_app_notwordle_objects_Game_nativeAvailableLetters(JNIEnv *env, jobject thiz,
+                                                       jlong p_native_ptr) {
+    // convert Validity array into Int array to make it easier to pass through JNI
+    const auto valList = ((Game*)p_native_ptr)->AvailableLetters();
+    jintArray result = env->NewIntArray(valList.size());
+    jint tmp[valList.size()]; // weird intermediary cuz JNI is weird like that
+
+    for(int i = 0; i < valList.size(); ++i) {
+        tmp[i] = static_cast<jint>(valList[i]);
+    }
+
+    env->SetIntArrayRegion(result, 0, valList.size(), tmp);
+    return result;
+}

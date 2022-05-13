@@ -14,7 +14,18 @@ enum class Validity(v: Int) {
     EMPTY(0),
     INVALID(1),
     CLOSE(2),
-    CORRECT(3)
+    CORRECT(3);
+
+    companion object {
+        fun fromInt(num: Int) : Validity {
+            for(v in values()) {
+                if(v.ordinal == num) {
+                    return v
+                }
+            }
+            throw ArrayIndexOutOfBoundsException("invalid int value for VALIDITY enumeration")
+        }
+    }
 }
 
 class Space() {
@@ -49,6 +60,8 @@ class Space() {
 
 @SuppressLint("AppCompatCustomView")
 class SpaceView(context: Context) : TextView(context) {
+    private var currentColor : Int = 0
+
     init {
         // get GradientDrawable from Resources and make any changes to it before saving it to background
         val gradDraw = ResourcesCompat.getDrawable(resources, R.drawable.space_shape, null) as GradientDrawable?
@@ -62,6 +75,12 @@ class SpaceView(context: Context) : TextView(context) {
     }
 
     fun updateBackgroundColor(color_val : Int) {
+        currentColor = color_val
         (background as GradientDrawable).setColor(color_val)
     }
+
+    fun getBackgroundColor() : Int {
+        return currentColor
+    }
+
 }

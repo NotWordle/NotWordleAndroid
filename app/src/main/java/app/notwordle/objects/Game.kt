@@ -43,6 +43,22 @@ class Game() {
         return nativeCheckGuess(nativePtr)
     }
 
+    fun markAvailableLetters() {
+        nativeMarkAvailableLetters(nativePtr);
+    }
+
+    fun getAvailableLetters() : Array<Validity> {
+        // get raw int array from native side and convert to enum array
+        val rawArr = nativeAvailableLetters(nativePtr)
+        val valArr = Array(rawArr.size) { Validity.EMPTY }
+
+        for((idx, num) in rawArr.withIndex()) {
+            valArr[idx] = Validity.fromInt(num)
+        }
+
+        return valArr
+    }
+
     private external fun createNativeInstance() : Long
     private external fun destroyNativeInstance(p_native_ptr : Long)
     private external fun nativeWordSize(p_native_ptr: Long, word_size: Int)
@@ -54,4 +70,6 @@ class Game() {
     private external fun nativeIsValidWord(p_native_ptr: Long, word: String) : Boolean
     private external fun nativeLoadDictionary(p_native_ptr: Long)
     private external fun nativeCheckGuess(p_native_ptr: Long) : Boolean
+    private external fun nativeMarkAvailableLetters(p_native_ptr: Long)
+    private external fun nativeAvailableLetters(p_native_ptr: Long) : IntArray
 }
