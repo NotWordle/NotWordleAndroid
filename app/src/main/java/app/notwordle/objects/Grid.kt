@@ -42,6 +42,10 @@ class Grid() {
         return Space(nativeGetSpace(nativePtr, row, col))
     }
 
+    fun CurrentRow() : Int {
+        return nativeCurrentRow(nativePtr);
+    }
+
     private external fun createNativeGrid(word_size: Int) : Long
     private external fun destroyNativeInstance(p_native_ptr : Long)
     private external fun nativeToString(p_native_ptr: Long) : String
@@ -50,6 +54,7 @@ class Grid() {
     private external fun nativeIncrementGuess(p_native_ptr: Long) : Boolean
     private external fun nativeGetGridDimensions(p_native_ptr: Long) : Pair<Int, Int>
     private external fun nativeGetSpace(p_native_ptr: Long, row: Int, col: Int) : Long
+    private external fun nativeCurrentRow(p_native_ptr: Long) : Int
 }
 
 class GridView(context: Context, var parent: LinearLayout) : View(context) {

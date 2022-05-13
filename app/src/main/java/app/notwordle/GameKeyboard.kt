@@ -27,7 +27,8 @@ class GameKeyboard @JvmOverloads constructor(
     private var inputConnection: InputConnection? = null
 
     // upper limit of character inputs, reject inputs after this (except special keys)
-    var maxInputSize : Int = 0;
+    var maxInputSize : Int = 0
+    var gameCallback : () -> Unit = {}
 
     private fun init(context: Context, attrs: AttributeSet?) {
         LayoutInflater.from(context).inflate(R.layout.keyboard, this, true)
@@ -141,6 +142,8 @@ class GameKeyboard @JvmOverloads constructor(
                 inputConnection!!.commitText(value, 1)
             }
         }
+        gameCallback()
+
     }
 
     fun setInputConnection(ic: InputConnection?) {

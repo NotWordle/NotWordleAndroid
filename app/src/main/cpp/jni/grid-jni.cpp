@@ -85,3 +85,9 @@ Java_app_notwordle_objects_Grid_nativeGetSpace(JNIEnv *env, jobject thiz, jlong 
     // convert C++ object to
     return (jlong)&space;
 }
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_app_notwordle_objects_Grid_nativeCurrentRow(JNIEnv *env, jobject thiz, jlong p_native_ptr) {
+    return ((Grid*)p_native_ptr)->CurrentRow();
+}
