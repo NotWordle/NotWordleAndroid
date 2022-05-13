@@ -59,6 +59,7 @@ class GameActivity : AppCompatActivity() {
 
         keyboard = findViewById(R.id.keyboard)
         keyboard.setInputConnection(ic)
+        keyboard.maxInputSize = wordSize
 
         val enterBtn = keyboard.keys[keyboard.getButtonIndex("ent")]
         enterBtn!!.setOnClickListener {

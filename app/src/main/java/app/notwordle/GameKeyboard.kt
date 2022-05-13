@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.ExtractedTextRequest
 import android.view.inputmethod.InputConnection
 import android.widget.Button
 import android.widget.LinearLayout
@@ -24,7 +25,10 @@ class GameKeyboard @JvmOverloads constructor(
     private val keyValues = SparseArray<String>()
     
     private var inputConnection: InputConnection? = null
-    
+
+    // upper limit of character inputs, reject inputs after this (except special keys)
+    var maxInputSize : Int = 0;
+
     private fun init(context: Context, attrs: AttributeSet?) {
         LayoutInflater.from(context).inflate(R.layout.keyboard, this, true)
 
@@ -131,8 +135,11 @@ class GameKeyboard @JvmOverloads constructor(
                 inputConnection!!.commitText("", 1)
             }
         } else {
-            val value = keyValues[view.id]
-            inputConnection!!.commitText(value, 1)
+            val etxt = inputConnection!!.getExtractedText(ExtractedTextRequest(), 0);
+            if (etxt.text.length < maxInputSize) {
+                val value = keyValues[view.id]
+                inputConnection!!.commitText(value, 1)
+            }
         }
     }
 
