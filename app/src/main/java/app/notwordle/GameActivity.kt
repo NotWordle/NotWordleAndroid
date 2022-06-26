@@ -20,6 +20,7 @@ class GameActivity : AppCompatActivity() {
     var curCol: Int = 0
     lateinit var gridView: GridView
     lateinit var keyboard: GameKeyboard
+    lateinit var input: EditText
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,10 +48,11 @@ class GameActivity : AppCompatActivity() {
         gridView = GridView(this, gameLayout)
         gridView.generateGrid(grid)
 
-        // create input by allowing user to write in text and enter it
-        // TODO: change this to write type user guess into Spaces
+        // input is typed into a hidden EditText that the Grid can examine to update
+        // its Spaces accordingly
         val inputLayout = findViewById<LinearLayout>(R.id.input_layout)
-        val input = EditText(this)
+        this.input = EditText(this)
+        input.visibility = EditText.GONE
         input.hint = "enter input..."
         inputLayout.addView(input)
         input.setRawInputType(InputType.TYPE_CLASS_TEXT)
@@ -59,6 +61,17 @@ class GameActivity : AppCompatActivity() {
 
         keyboard = findViewById(R.id.keyboard)
         keyboard.setInputConnection(ic)
+        keyboard.maxInputSize = wordSize
+        keyboard.gameCallback = {
+            val curTxt = input.text
+            val curRow = game.getGrid().CurrentRow()
+
+            for(col in 0 until wordSize) {
+                val letter : String = if (col < curTxt.length) curTxt[col].uppercase() else '-'.toString()
+                println("updated grid at [$curRow, $col] with '$letter'")
+                gridView.updateSpace(curRow, col, letter)
+            }
+        }
 
         val enterBtn = keyboard.keys[keyboard.getButtonIndex("ent")]
         enterBtn!!.setOnClickListener {
