@@ -48,8 +48,8 @@ class GameActivity : AppCompatActivity() {
         gridView = GridView(this, gameLayout)
         gridView.generateGrid(grid)
 
-        // create input by allowing user to write in text and enter it
-        // TODO: change this to write type user guess into Spaces
+        // input is typed into a hidden EditText that the Grid can examine to update
+        // its Spaces accordingly
         val inputLayout = findViewById<LinearLayout>(R.id.input_layout)
         this.input = EditText(this)
         input.visibility = EditText.GONE
